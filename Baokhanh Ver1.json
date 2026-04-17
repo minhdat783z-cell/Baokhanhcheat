@@ -1,0 +1,8 @@
+[
+  {
+    "enabled": true,
+    "name": "BAOKHANHCHEAT-SOURCE",
+    "url": ["*/GetBackpack", "*/ABHotUpdates/*", "*/fileinfo*", "*/assetindexer*"],
+    "script": "async function onResponse(context, request, response) {\n  const GITHUB_USER = 'minhdat783z-cell';\n  const REPO_NAME = 'Baokhanhcheat';\n  const BRANCH = 'main';\n  const baseRaw = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/`;\n\n  function htb(hex) {\n    let bytes = \"\";\n    for (let i = 0; i < hex.length; i += 2) {\n      bytes += String.fromCharCode(parseInt(hex.substr(i, 2), 16));\n    }\n    return bytes;\n  }\n\n  const url = request.url;\n\n  try {\n    let hexSource = \"\";\n    if (url.includes(\"/GetBackpack\")) {\n      hexSource = \"config_folder/lov2.txt\";\n    } else if (url.includes(\"/fileinfo\")) {\n      hexSource = \"assets_folder/3dr.txt\";\n    } else if (url.includes(\"/assetindexer\")) {\n      hexSource = \"bypass_logic/indr.txt\";\n    }\n\n    if (hexSource !== \"\") {\n      const finalUrl = baseRaw + hexSource;\n      const resFetch = await fetch(finalUrl);\n      if (!resFetch.ok) return response;\n\n      const rawData = await resFetch.text();\n      response.body = htb(rawData.trim().replace(/\\s/g, ''));\n      response.statusCode = 200;\n      response.headers[\"Content-Type\"] = \"application/octet-stream\";\n      delete response.headers[\"Content-Length\"];\n      return response;\n    }\n  } catch (e) {\n    return response;\n  }\n  return response;\n}"
+  }
+]
